@@ -12,6 +12,7 @@ export type ConfiguratorState = {
   viewMode: ViewMode;
   graphicSource?: GraphicSource;
   templateId: string; // e.g. "S001"
+  defaultDielineUrl: string;
 };
 
 type Action =
@@ -24,6 +25,7 @@ const initialState: ConfiguratorState = {
   viewMode: '3D',
   graphicSource: undefined,
   templateId: 'S001',
+  defaultDielineUrl: '/dielines/s001_white.png',
 };
 
 function reducer(state: ConfiguratorState, action: Action): ConfiguratorState {

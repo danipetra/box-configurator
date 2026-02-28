@@ -1,6 +1,7 @@
 'use client';
 
 import { useConfigurator } from '@/context/configuratorContext';
+import { pdfFirstPageToDataUrl } from '@/utility/pdf';
 
 function ToggleButton({
   active,
@@ -28,16 +29,18 @@ function ToggleButton({
 export default function ControlsPanel() {
   const { state, actions } = useConfigurator();
 
-  const onUpload = (file: File) => {
-    const url = URL.createObjectURL(file);
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  // FIXME
+  const onUpload = async (file: File) => {
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
-    actions.setGraphicSource({
-      type: isPdf ? 'pdf' : 'image',
-      url,
-      name: file.name,
-    });
-  };
+  if (isPdf) {
+    const dataUrl = await pdfFirstPageToDataUrl(file, 2);
+    actions.setGraphicSource({ type: 'pdf', url: dataUrl, name: file.name });
+  } else {
+    const url = URL.createObjectURL(file);
+    actions.setGraphicSource({ type: 'image', url, name: file.name });
+  }
+};
 
   return (
     <div className="flex h-full flex-col">
@@ -62,9 +65,9 @@ export default function ControlsPanel() {
               type="file"
               className="hidden"
               accept="image/*,application/pdf"
-              onChange={(e) => {
+              onChange={async (e) => {
                 const file = e.target.files?.[0];
-                if (file) onUpload(file);
+                if (file) await onUpload(file);
               }}
             />
             <span>Click to upload (image or PDF)</span>
