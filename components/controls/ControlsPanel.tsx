@@ -31,16 +31,18 @@ export default function ControlsPanel() {
 
   // FIXME
   const onUpload = async (file: File) => {
-  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
-  if (isPdf) {
-    const dataUrl = await pdfFirstPageToDataUrl(file, 2);
-    actions.setGraphicSource({ type: 'pdf', url: dataUrl, name: file.name });
-  } else {
-    const url = URL.createObjectURL(file);
-    actions.setGraphicSource({ type: 'image', url, name: file.name });
-  }
-};
+    if (isPdf) {
+      const dataUrl = await pdfFirstPageToDataUrl(file, 2);
+      actions.setGraphicSource({ type: 'pdf', url: dataUrl, name: file.name });
+    } else {
+      const url = URL.createObjectURL(file);
+      actions.setGraphicSource({ type: 'image', url, name: file.name });
+    }
+
+    actions.setAppearance('GRAPHIC');
+  };  
 
   return (
     <div className="flex h-full flex-col">
@@ -56,6 +58,25 @@ export default function ControlsPanel() {
             <ToggleButton active={state.viewMode === '2D'} label="2D" onClick={() => actions.setViewMode('2D')} />
             <ToggleButton active={state.viewMode === '3D'} label="3D" onClick={() => actions.setViewMode('3D')} />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-zinc-300">Appearance</div>
+          <div className="flex gap-2">
+            <ToggleButton
+              active={state.appearance === 'WHITE'}
+              label="White"
+              onClick={() => actions.setAppearance('WHITE')}
+            />
+            <ToggleButton
+              active={state.appearance === 'GRAPHIC'}
+              label="Graphic"
+              onClick={() => actions.setAppearance('GRAPHIC')}
+            />
+          </div>
+          <p className="text-xs text-zinc-500">
+            {state.appearance === 'WHITE' ? 'No texture applied' : 'Will apply uploaded graphic (later: template mapping)'}
+          </p>
         </div>
 
         <div className="space-y-2">
