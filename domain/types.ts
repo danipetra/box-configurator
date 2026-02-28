@@ -1,0 +1,1 @@
+type FaceId = 'front' | 'back' | 'left' | 'right' | 'top' | 'bottom';
