@@ -2,13 +2,38 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { MeshStandardMaterial } from 'three';
+import { useBoxTextures } from './useBoxTextures';
+import { useMemo, useEffect } from 'react';
 
 function BoxMesh() {
-  // dimensioni in "unità" coerenti: 80x80x150mm => 0.08,0.08,0.15 (metri)
+  const textures = useBoxTextures();
+
+  // materials: array in right, left, top, bottom, front, back order if textures exist, otherwise null
+  const mats = useMemo(() => {
+  if (!textures) return null;
+    return [
+      new MeshStandardMaterial({ map: textures.right }),
+      new MeshStandardMaterial({ map: textures.left }),
+      new MeshStandardMaterial({ map: textures.top }),
+      new MeshStandardMaterial({ map: textures.bottom }),
+      new MeshStandardMaterial({ map: textures.front }),
+      new MeshStandardMaterial({ map: textures.back }),
+    ];
+  }, [textures]);
+
+  useEffect(() => {
+    return () => { mats?.forEach(m => m.dispose()); };
+  }, [mats]);
+
   return (
     <mesh>
       <boxGeometry args={[0.08, 0.15, 0.08]} />
-      <meshStandardMaterial />
+      {mats ? (
+        mats.map((m, i) => <primitive key={i} object={m} attach={`material-${i}`} />)
+      ) : (
+        <meshStandardMaterial />
+      )}
     </mesh>
   );
 }
