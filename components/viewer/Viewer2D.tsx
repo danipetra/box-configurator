@@ -1,26 +1,26 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useConfigurator } from '@/context/configuratorContext';
+import { useBoxConfigurator } from '@/context/configuratorContext';
 import { TEMPLATES } from '@/domain/templates';
 import { computeContainRect, type RectPx } from '@/utility/contain';
 
 const FACES = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
 
 export default function Viewer2D() {
-  const { state } = useConfigurator();
+  const { state } = useBoxConfigurator();
 
   const src = state.graphicSource?.url ?? state.defaultDielineUrl;
   const template = TEMPLATES[state.templateId as keyof typeof TEMPLATES];
 
-  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   const [contain, setContain] = useState<RectPx | null>(null);
   const [showRegions, setShowRegions] = useState(true);
 
-  const recomputeContain = () => {
-    const wrap = wrapRef.current;
+  const updateContainRect = () => {
+    const wrap = containerRef.current;
     const img = imgRef.current;
     if (!wrap || !img) return;
 
@@ -43,11 +43,11 @@ export default function Viewer2D() {
 
   // Use ResizeObserver for accurate updates when layout changes
   useEffect(() => {
-    const wrap = wrapRef.current;
+    const wrap = containerRef.current;
     if (!wrap) return;
 
     const ro = new ResizeObserver(() => {
-      recomputeContain();
+      updateContainRect();
     });
     ro.observe(wrap);
 
@@ -77,7 +77,7 @@ export default function Viewer2D() {
         </label>
       </div>
 
-      <div ref={wrapRef} className="relative h-full w-full">
+      <div ref={containerRef} className="relative h-full w-full">
         <img
           ref={imgRef}
           src={src}
@@ -86,7 +86,7 @@ export default function Viewer2D() {
           draggable={false}
           onLoad={() => {
             // naturalWidth/Height available after load
-            recomputeContain();
+            updateContainRect();
           }}
         />
 

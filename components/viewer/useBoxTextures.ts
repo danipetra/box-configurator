@@ -3,21 +3,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CanvasTexture } from 'three';
 import { loadImage } from '@/utility/image';
-import { createFaceTextures, FaceTextureMap } from '@/utility/createFaceTextures';
+import { buildFaceTexturesFromDieline, FaceTextureMap } from '@/utility/buildFaceTexturesFromDieline';
 import { TEMPLATES } from '@/domain/templates';
-import { useConfigurator } from '@/context/configuratorContext';
+import { useBoxConfigurator } from '@/context/configuratorContext';
 
 export function useBoxTextures() {
-  const { state } = useConfigurator();
+  const { state } = useBoxConfigurator();
   const template = TEMPLATES[state.templateId as keyof typeof TEMPLATES];
+  
+  const [textures, setTextures] = useState<FaceTextureMap | null>(null);
 
   const sourceUrl = useMemo(() => {
     // if GRAPHIC, use graphicSource url if available, otherwise fallback to default dieline url; if not GRAPHIC, no texture
-    if (state.appearance === 'GRAPHIC') return state.graphicSource?.url ?? state.defaultDielineUrl;
+    if (state.surfaceMode === 'GRAPHIC') return state.graphicSource?.url ?? state.defaultDielineUrl;
     return null;
-  }, [state.appearance, state.graphicSource?.url, state.defaultDielineUrl]);
-
-  const [textures, setTextures] = useState<FaceTextureMap | null>(null);
+  }, [state.surfaceMode, state.graphicSource?.url, state.defaultDielineUrl]);
 
   useEffect(() => {
     let cancelled = false;
@@ -31,7 +31,7 @@ export function useBoxTextures() {
 
       // load image, create textures, set state (if not cancelled)
       const img = await loadImage(sourceUrl);
-      const map = createFaceTextures(img, template.faces, { faceSizePx: 1024 });
+      const map = buildFaceTexturesFromDieline(img, template.faces, { faceSizePx: 1024 });
 
       if (cancelled) {
         //dispose textures if we created them but got cancelled before setting state

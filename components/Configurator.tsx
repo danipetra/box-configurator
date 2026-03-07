@@ -1,12 +1,12 @@
 'use client';
 
-import { ConfiguratorProvider, useConfigurator } from '@/context/configuratorContext';
+import { BoxConfiguratorProvider, useBoxConfigurator } from '@/context/configuratorContext';
 import ControlsPanel from '@/components/controls/ControlsPanel';
 import Viewer2D from '@/components/viewer/Viewer2D';
 import Viewer3D from '@/components/viewer/Viewer3D';
 
 function ConfiguratorInner() {
-  const { state } = useConfigurator();
+  const { state } = useBoxConfigurator();
 
   return (
     <div className="h-[calc(100vh-0px)] w-full bg-zinc-950 text-zinc-100">
@@ -35,8 +35,8 @@ function ConfiguratorInner() {
 
 export default function Configurator() {
   return (
-    <ConfiguratorProvider>
+    <BoxConfiguratorProvider>
       <ConfiguratorInner />
-    </ConfiguratorProvider>
+    </BoxConfiguratorProvider>
   );
 }

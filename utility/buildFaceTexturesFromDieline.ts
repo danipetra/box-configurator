@@ -8,20 +8,20 @@ type Options = {
   faceSizePx?: number;
 };
 
-export function createFaceTextures(
+export function buildFaceTexturesFromDieline(
   sourceImg: HTMLImageElement,
-  regions: Record<FaceId, RectN>,
+  faceRegions: Record<FaceId, RectN>,
   options: Options = {}
 ): FaceTextureMap {
-  const faceSizePx = options.faceSizePx ?? 1024;
+  const outputSizePx = options.faceSizePx ?? 1024;
 
-  const out: Partial<FaceTextureMap> = {};
+  const faceTextures: Partial<FaceTextureMap> = {};
 
   const srcW = sourceImg.naturalWidth || sourceImg.width;
   const srcH = sourceImg.naturalHeight || sourceImg.height;
 
-  (Object.keys(regions) as FaceId[]).forEach((face) => {
-    const r = regions[face];
+  (Object.keys(faceRegions) as FaceId[]).forEach((face) => {
+    const r = faceRegions[face];
 
     // convert normalized rect → pixel rect
     const sx = Math.round(r.x * srcW);
@@ -30,8 +30,8 @@ export function createFaceTextures(
     const sh = Math.round(r.h * srcH);
 
     const canvas = document.createElement('canvas');
-    canvas.width = faceSizePx;
-    canvas.height = faceSizePx;
+    canvas.width = outputSizePx;
+    canvas.height = outputSizePx;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas 2D context not available');
@@ -40,14 +40,14 @@ export function createFaceTextures(
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, faceSizePx, faceSizePx);
+    ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, outputSizePx, outputSizePx);
 
-    const tex = new CanvasTexture(canvas);
-    tex.colorSpace = SRGBColorSpace; // correct-ish color in three
-    tex.needsUpdate = true;
+    const texture = new CanvasTexture(canvas);
+    texture.colorSpace = SRGBColorSpace; // correct-ish color in three
+    texture.needsUpdate = true;
 
-    out[face] = tex;
+    faceTextures[face] = texture;
   });
 
-  return out as FaceTextureMap;
+  return faceTextures as FaceTextureMap;
 }

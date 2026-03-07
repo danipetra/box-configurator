@@ -10,7 +10,7 @@ function BoxMesh() {
   const textures = useBoxTextures();
 
   // materials: array in right, left, top, bottom, front, back order if textures exist, otherwise null
-  const mats = useMemo(() => {
+  const materials = useMemo(() => {
   if (!textures) return null;
     return [
       new MeshStandardMaterial({ map: textures.right }),
@@ -23,14 +23,14 @@ function BoxMesh() {
   }, [textures]);
 
   useEffect(() => {
-    return () => { mats?.forEach(m => m.dispose()); };
-  }, [mats]);
+    return () => { materials?.forEach(m => m.dispose()); };
+  }, [materials]);
 
   return (
     <mesh>
       <boxGeometry args={[0.08, 0.15, 0.08]} />
-      {mats ? (
-        mats.map((m, i) => <primitive key={i} object={m} attach={`material-${i}`} />)
+      {materials ? (
+        materials.map((m, i) => <primitive key={i} object={m} attach={`material-${i}`} />)
       ) : (
         <meshStandardMaterial />
       )}

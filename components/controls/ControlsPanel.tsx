@@ -1,33 +1,11 @@
 'use client';
 
-import { useConfigurator } from '@/context/configuratorContext';
+import { useBoxConfigurator } from '@/context/configuratorContext';
 import { pdfFirstPageToDataUrl } from '@/utility/pdf';
-
-function ToggleButton({
-  active,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        'rounded-xl px-3 py-2 text-sm font-medium transition',
-        active ? 'bg-zinc-100 text-zinc-900' : 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700',
-      ].join(' ')}
-    >
-      {label}
-    </button>
-  );
-}
+import ToggleButton from '../ui/ToggleButton';
 
 export default function ControlsPanel() {
-  const { state, actions } = useConfigurator();
+  const { state, actions } = useBoxConfigurator();
 
   // FIXME
   const onUpload = async (file: File) => {
@@ -41,14 +19,14 @@ export default function ControlsPanel() {
       actions.setGraphicSource({ type: 'image', url, name: file.name });
     }
 
-    actions.setAppearance('GRAPHIC');
+    actions.setSurfaceMode('GRAPHIC');
   };  
 
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-zinc-800 px-4 py-3">
         <h2 className="text-sm font-semibold">Controls</h2>
-        <p className="text-xs text-zinc-400">Basic state wiring (Step 1)</p>
+        <p className="text-xs text-zinc-400">Customize your box</p>
       </div>
 
       <div className="flex flex-1 flex-col gap-5 p-4">
@@ -61,21 +39,21 @@ export default function ControlsPanel() {
         </div>
 
         <div className="space-y-2">
-          <div className="text-xs font-semibold text-zinc-300">Appearance</div>
+          <div className="text-xs font-semibold text-zinc-300">Surface</div>
           <div className="flex gap-2">
             <ToggleButton
-              active={state.appearance === 'WHITE'}
+              active={state.surfaceMode === 'WHITE'}
               label="White"
-              onClick={() => actions.setAppearance('WHITE')}
+              onClick={() => actions.setSurfaceMode('WHITE')}
             />
             <ToggleButton
-              active={state.appearance === 'GRAPHIC'}
+              active={state.surfaceMode === 'GRAPHIC'}
               label="Graphic"
-              onClick={() => actions.setAppearance('GRAPHIC')}
+              onClick={() => actions.setSurfaceMode('GRAPHIC')}
             />
           </div>
           <p className="text-xs text-zinc-500">
-            {state.appearance === 'WHITE' ? 'No texture applied' : 'Will apply uploaded graphic (later: template mapping)'}
+            {state.surfaceMode === 'WHITE' ? 'No texture applied' : 'Will apply uploaded graphic (later: template mapping)'}
           </p>
         </div>
 
