@@ -5,6 +5,10 @@ import ControlsPanel from '@/components/controls/ControlsPanel';
 import Viewer2D from '@/components/viewer/Viewer2D';
 import Viewer3D from '@/components/viewer/Viewer3D';
 
+/**
+ * Main composition root for the configurator.
+ * It connects shared state, controls and the active preview panel.
+ */
 function ConfiguratorInner() {
   const { state } = useBoxConfigurator();
 

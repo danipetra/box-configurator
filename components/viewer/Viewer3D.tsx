@@ -1,3 +1,10 @@
+/**
+ * 3D box preview.
+ *
+ * A separate material is assigned to each face so that every box side
+ * can receive its own cropped texture generated from the dieline.
+ */
+
 'use client';
 
 import { Canvas } from '@react-three/fiber';
@@ -9,7 +16,12 @@ import { useMemo, useEffect } from 'react';
 function BoxMesh() {
   const textures = useBoxTextures();
 
-  // materials: array in right, left, top, bottom, front, back order if textures exist, otherwise null
+  /**
+   * Three.js box material order:
+   * [right, left, top, bottom, front, back]
+   *
+   * This must stay aligned with the template-driven face mapping.
+   */
   const materials = useMemo(() => {
   if (!textures) return null;
     return [

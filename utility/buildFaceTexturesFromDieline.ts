@@ -1,6 +1,9 @@
 import { CanvasTexture, SRGBColorSpace } from 'three';
 import { FaceId, RectN } from '@/domain/types';
 
+/**
+ * Face-to-texture map consumed by the 3D preview.
+ */
 export type FaceTextureMap = Record<FaceId, CanvasTexture>;
 
 type Options = {
@@ -8,6 +11,15 @@ type Options = {
   faceSizePx?: number;
 };
 
+/**
+ * Crops each box face from the source dieline image and converts it
+ * into a Three.js CanvasTexture.
+ *
+ * Why this approach:
+ * - keeps the mapping template-driven
+ * - avoids custom UV unwrapping for the exercise scope
+ * - makes it easy to support additional box templates in the future
+ */
 export function buildFaceTexturesFromDieline(
   sourceImg: HTMLImageElement,
   faceRegions: Record<FaceId, RectN>,
@@ -23,7 +35,7 @@ export function buildFaceTexturesFromDieline(
   (Object.keys(faceRegions) as FaceId[]).forEach((face) => {
     const r = faceRegions[face];
 
-    // convert normalized rect → pixel rect
+    // Convert normalized template coordinates into pixel crop coordinates.
     const sx = Math.round(r.x * srcW);
     const sy = Math.round(r.y * srcH);
     const sw = Math.round(r.w * srcW);
@@ -36,14 +48,15 @@ export function buildFaceTexturesFromDieline(
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas 2D context not available');
 
-    // draw cropped region into output canvas (stretch to faceSizePx)
+    // Draw the cropped region into an output canvas.
+    // This becomes the final texture for one specific 3D face.
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
     ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, outputSizePx, outputSizePx);
 
     const texture = new CanvasTexture(canvas);
-    texture.colorSpace = SRGBColorSpace; // correct-ish color in three
+    texture.colorSpace = SRGBColorSpace; // Use sRGB so colors match the expected appearance in the Three.js scene.
     texture.needsUpdate = true;
 
     faceTextures[face] = texture;

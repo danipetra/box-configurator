@@ -1,8 +1,12 @@
 import { BoxTemplate } from './types';
 
 /**
- * Normalized coordinates relative to the canonical S001 dieline.
- * Since the dieline layout is known and stable, no runtime calibration is required.
+ * Canonical template for the S001 dieline.
+ *
+ * Face regions are expressed as normalized coordinates relative to
+ * the full source dieline image. Since the dieline layout is known
+ * and stable, these values can be consolidated directly in the template
+ * instead of being computed dynamically at runtime.
  */
 export const S001_TEMPLATE: BoxTemplate = {
   id: 'S001',

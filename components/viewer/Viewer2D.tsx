@@ -19,6 +19,10 @@ export default function Viewer2D() {
   const [contain, setContain] = useState<RectPx | null>(null);
   const [showRegions, setShowRegions] = useState(true);
 
+  /**
+   * Recompute the actual image bounds inside the container.
+   * This keeps region overlays aligned even when the viewport changes.
+   */
   const updateContainRect = () => {
     const wrap = containerRef.current;
     const img = imgRef.current;
@@ -46,6 +50,7 @@ export default function Viewer2D() {
     const wrap = containerRef.current;
     if (!wrap) return;
 
+    // Recalculate overlay bounds whenever the viewer container is resized.
     const ro = new ResizeObserver(() => {
       updateContainRect();
     });

@@ -1,5 +1,13 @@
 export type RectPx = { left: number; top: number; width: number; height: number };
 
+/**
+ * Computes the actual rectangle occupied by an image rendered with object-contain
+ * inside a container of arbitrary size.
+ *
+ * This is needed because the image does not necessarily fill the whole container:
+ * letterboxing may appear horizontally or vertically.
+ * The returned rect lets us anchor overlays exactly on top of the visible image.
+ */
 export function computeContainRect(
   containerW: number,
   containerH: number,
@@ -12,13 +20,13 @@ export function computeContainRect(
   let width: number, height: number, left: number, top: number;
 
   if (imageRatio > containerRatio) {
-    // image is "wider": fit width
+     // Image is wider than the container ratio: fit by width.
     width = containerW;
     height = width / imageRatio;
     left = 0;
     top = (containerH - height) / 2;
   } else {
-    // image is "taller": fit height
+    // Image is taller/narrower than the container ratio: fit by height.
     height = containerH;
     width = height * imageRatio;
     top = 0;

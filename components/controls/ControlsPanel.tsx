@@ -7,6 +7,10 @@ import ToggleButton from '../ui/ToggleButton';
 export default function ControlsPanel() {
   const { state, actions } = useBoxConfigurator();
 
+  /**
+   * Normalize uploaded assets into a single image-based pipeline.
+   * PDFs are rasterized first, images are used directly.
+   */
   // FIXME
   const onUpload = async (file: File) => {
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
@@ -19,6 +23,7 @@ export default function ControlsPanel() {
       actions.setGraphicSource({ type: 'image', url, name: file.name });
     }
 
+    // Uploading a file implicitly switches the box into graphic mode.
     actions.setSurfaceMode('GRAPHIC');
   };  
 

@@ -1,3 +1,7 @@
+/**
+ * Loads an image element from a URL/dataURL so it can be used
+ * as a source for canvas-based cropping.
+ */
 export async function loadImage(src: string): Promise<HTMLImageElement> {
   return await new Promise((resolve, reject) => {
     const img = new Image();
